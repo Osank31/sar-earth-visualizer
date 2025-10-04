@@ -1,22 +1,43 @@
 import { useEffect, useState, useMemo } from 'react';
 import Papa from 'papaparse';
 import type { SarData, CityData } from '../types';
-import { sarCsvData } from '../services/data';
 
 export const useSarData = () => {
   const [allData, setAllData] = useState<SarData[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    Papa.parse(sarCsvData, {
-      header: true,
-      skipEmptyLines: true,
-      dynamicTyping: true,
-      complete: (results: { data: SarData[] }) => {
-        setAllData(results.data);
+    console.log('Loading CSV file...');
+    // Load the new CSV file with daily data
+    fetch('/sar_environmental_data_500_cities_5_years.csv')
+      .then(response => response.text())
+      .then(csvText => {
+        console.log('CSV file loaded, parsing...');
+        Papa.parse(csvText, {
+          header: true,
+          skipEmptyLines: true,
+          dynamicTyping: true,
+          complete: (results: { data: any[] }) => {
+            // Filter out invalid rows and ensure date field exists
+            const validData = results.data.filter((row: any) => 
+              row.City && row.Latitude && row.Longitude && row.date
+            );
+            console.log('CSV parsed:', validData.length, 'valid rows');
+            console.log('First row:', validData[0]);
+            console.log('Date range:', validData[0]?.date, 'to', validData[validData.length - 1]?.date);
+            setAllData(validData as SarData[]);
+            setLoading(false);
+          },
+          error: (error: any) => {
+            console.error('CSV parse error:', error);
+            setLoading(false);
+          }
+        });
+      })
+      .catch(error => {
+        console.error('Error loading CSV:', error);
         setLoading(false);
-      },
-    });
+      });
   }, []);
 
   const citiesData = useMemo<Record<string, CityData>>(() => {

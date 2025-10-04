@@ -35,6 +35,7 @@ export function getMetrics(): Record<Metric, MetricConfig> {
   return METRICS_CACHE;
 }
 
-export const INITIAL_YEAR = 2023;
-export const AVAILABLE_YEARS = [2019, 2020, 2021, 2022, 2023];
+export const INITIAL_SELECTED_DATE = '2023-01-01';
+export const MIN_DATE = '2019-01-01';
+export const MAX_DATE = '2023-12-31';
 export const HIGH_RISK_THRESHOLD = 0.7;
