@@ -7,12 +7,41 @@ export const useSarData = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    Papa.parse(sarCsvData, {
-      header: true,
-      skipEmptyLines: true,
-      dynamicTyping: true,
-      complete: (results: { data: SarData[] }) => {
-        setAllData(results.data);
+    console.log('Loading CSV file...');
+    fetch('/sar_environmental_data_500_cities_5_years.csv')
+      .then(response => {
+        console.log('Response status:', response.status, response.statusText);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.text();
+      })
+      .then(csvText => {
+        console.log('CSV file loaded, size:', csvText.length, 'bytes');
+        Papa.parse(csvText, {
+          header: true,
+          skipEmptyLines: true,
+          dynamicTyping: true,
+          complete: (results: { data: any[] }) => {
+            const validData = results.data.filter((row: any) => 
+              row.City && row.Latitude && row.Longitude && row.date
+            );
+            console.log('CSV parsed:', validData.length, 'valid rows');
+            if (validData.length > 0) {
+              console.log('First row:', validData[0]);
+            }
+            setAllData(validData as SarData[]);
+            setLoading(false);
+          },
+          error: (error: any) => {
+            console.error('CSV parse error:', error);
+            setLoading(false);
+          }
+        });
+      })
+      .catch(error => {
+        console.error('Error loading CSV:', error);
+        alert(`Failed to load data: ${error.message}`);
         setLoading(false);
       });
   }, []);
