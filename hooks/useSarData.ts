@@ -8,12 +8,57 @@ export const useSarData = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+<<<<<<< Updated upstream
     Papa.parse(sarCsvData, {
       header: true,
       skipEmptyLines: true,
       dynamicTyping: true,
       complete: (results: { data: SarData[] }) => {
         setAllData(results.data);
+=======
+    console.log('Loading CSV file...');
+    // Load the new CSV file with daily data
+    fetch('/sar_environmental_data_500_cities_5_years.csv')
+      .then(response => {
+        console.log('Response status:', response.status, response.statusText);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.text();
+      })
+      .then(csvText => {
+        console.log('CSV file loaded, size:', csvText.length, 'bytes');
+        console.log('CSV first 200 chars:', csvText.substring(0, 200));
+        Papa.parse(csvText, {
+          header: true,
+          skipEmptyLines: true,
+          dynamicTyping: true,
+          complete: (results: { data: any[] }) => {
+            // Filter out invalid rows and ensure date field exists
+            const validData = results.data.filter((row: any) => 
+              row.City && row.Latitude && row.Longitude && row.date
+            );
+            console.log('CSV parsed:', validData.length, 'valid rows');
+            if (validData.length > 0) {
+              console.log('First row:', validData[0]);
+              console.log('Date range:', validData[0]?.date, 'to', validData[validData.length - 1]?.date);
+            } else {
+              console.error('No valid data found in CSV!');
+            }
+            setAllData(validData as SarData[]);
+            setLoading(false);
+          },
+          error: (error: any) => {
+            console.error('CSV parse error:', error);
+            setLoading(false);
+          }
+        });
+      })
+      .catch(error => {
+        console.error('Error loading CSV:', error);
+        console.error('Error details:', error.message);
+        alert(`Failed to load data: ${error.message}. Please check the console for details.`);
+>>>>>>> Stashed changes
         setLoading(false);
       },
     });

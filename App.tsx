@@ -92,7 +92,15 @@ const App: React.FC = () => {
         </div>
         <div className="flex-1 min-h-0 relative">
           {loading ? (
-            <div className="flex items-center justify-center h-full text-white text-xl">Loading SAR Data...</div>
+            <div className="flex flex-col items-center justify-center h-full text-white">
+              <div className="text-2xl mb-4">🌍 Loading Environmental Data...</div>
+              <div className="text-sm text-gray-400 mb-4">Loading 803,442 records from 500 cities</div>
+              <div className="w-64 h-2 bg-gray-700 rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-blue-500 to-purple-500 animate-pulse"></div>
+              </div>
+              <div className="text-xs text-gray-500 mt-4">This may take 10-30 seconds on first load</div>
+              <div className="text-xs text-gray-600 mt-2">Check browser console (F12) if stuck</div>
+            </div>
           ) : (
             <GlobeComponent 
                 pointsData={globePoints} 
