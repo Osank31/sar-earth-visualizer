@@ -58,6 +58,9 @@ export const useSarData = () => {
         console.error('Error loading CSV:', error);
         console.error('Error details:', error.message);
         alert(`Failed to load data: ${error.message}. Please check the console for details.`);
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
         setLoading(false);
       },
