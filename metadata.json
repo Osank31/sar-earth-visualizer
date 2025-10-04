@@ -1,0 +1,5 @@
+{
+  "name": "SAR Earth Visualizer",
+  "description": "An interactive web application for visualizing global environmental data derived from Synthetic Aperture Radar (SAR) observations on a 3D globe.",
+  "requestFramePermissions": []
+}
