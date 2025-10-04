@@ -53,28 +53,47 @@ const Sidebar: React.FC<SidebarProps> = ({
   onResetAnimation
 }) => {
   const METRICS = getMetrics();
-  return (
-    <div className="w-full md:w-80 lg:w-96 bg-gray-800/50 backdrop-blur-md p-4 flex-shrink-0 overflow-y-auto rounded-lg m-2 md:max-h-[calc(100vh-1rem)] scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
-      <h2 className="text-2xl font-bold mb-4 text-white">Controls</h2>
 
-      {/* Visualization Mode */}
+  const containerStyle: React.CSSProperties = {
+    width: '100%',
+    maxWidth: '24rem',
+    backgroundColor: 'rgba(31,41,55,0.5)',
+    backdropFilter: 'blur(8px)',
+    padding: '1rem',
+    flexShrink: 0,
+    overflowY: 'auto',
+    borderRadius: '0.5rem',
+    margin: '0.5rem',
+    maxHeight: 'calc(100vh - 1rem)'
+  };
+
+  const titleStyle: React.CSSProperties = { fontSize: '1.25rem', fontWeight: 700, marginBottom: '1rem', color: '#fff' };
+
+  return (
+    <div style={containerStyle}>
+      <h2 style={titleStyle}>Controls</h2>
+
       {onVisualizationModeChange && (
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-300 mb-2">Visualization Style</label>
-          <div className="grid grid-cols-2 gap-2">
+        <div style={{ marginBottom: '1.5rem' }}>
+          <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: '#d1d5db', marginBottom: '0.5rem' }}>Visualization Style</label>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: '0.5rem' }}>
             {(['mesh', 'hexbin', 'rings', 'hybrid'] as const).map(mode => (
               <button
                 key={mode}
                 onClick={() => onVisualizationModeChange(mode)}
-                className={`px-3 py-2 text-xs rounded-lg transition-colors ${
-                  visualizationMode === mode
-                    ? 'bg-purple-600 text-white font-semibold'
-                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                }`}
+                style={{
+                  padding: '0.5rem 0.75rem',
+                  fontSize: '0.75rem',
+                  borderRadius: '0.5rem',
+                  transition: 'background-color 0.15s ease',
+                  backgroundColor: visualizationMode === mode ? '#7c3aed' : '#374151',
+                  color: visualizationMode === mode ? '#fff' : '#d1d5db',
+                  fontWeight: visualizationMode === mode ? 600 : 400
+                }}
               >
                 {mode === 'mesh' && '🔷 3D Mesh'}
                 {mode === 'hexbin' && '⬡ Hexagonal'}
-                {mode === 'rings' && '◎ Ripple Rings'}
+                {mode === 'rings' && '◌ Ripple Rings'}
                 {mode === 'hybrid' && '✨ Combined'}
               </button>
             ))}
@@ -82,22 +101,19 @@ const Sidebar: React.FC<SidebarProps> = ({
         </div>
       )}
 
-      {/* Single Date Selector with Navigation */}
-      <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-300 mb-2">📅 Selected Date</label>
-        <div className="space-y-3">
-          {/* Date Picker */}
+      <div style={{ marginBottom: '1.5rem' }}>
+        <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: '#d1d5db', marginBottom: '0.5rem' }}>📅 Selected Date</label>
+        <div style={{ display: 'grid', gap: '0.75rem' }}>
           <input
             type="date"
             value={selectedDate}
             onChange={(e) => setSelectedDate(e.target.value)}
             min={MIN_DATE}
             max={MAX_DATE}
-            className="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none text-sm"
+            style={{ width: '100%', padding: '0.5rem', backgroundColor: '#374151', color: '#fff', borderRadius: '0.5rem', border: '1px solid #4b5563', fontSize: '0.875rem' }}
           />
-          
-          {/* Navigation Buttons */}
-          <div className="flex gap-2">
+
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
             <button
               onClick={() => {
                 const current = new Date(selectedDate);
@@ -106,7 +122,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 if (newDate >= MIN_DATE) setSelectedDate(newDate);
               }}
               disabled={selectedDate <= MIN_DATE}
-              className="flex-1 px-3 py-2 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg text-sm font-semibold transition-colors flex items-center justify-center gap-1"
+              style={{ flex: 1, padding: '0.5rem', background: selectedDate <= MIN_DATE ? '#4b5563' : '#2563eb', color: '#fff', borderRadius: '0.5rem', fontSize: '0.875rem', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >
               ← Previous Day
             </button>
@@ -118,210 +134,104 @@ const Sidebar: React.FC<SidebarProps> = ({
                 if (newDate <= MAX_DATE) setSelectedDate(newDate);
               }}
               disabled={selectedDate >= MAX_DATE}
-              className="flex-1 px-3 py-2 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg text-sm font-semibold transition-colors flex items-center justify-center gap-1"
+              style={{ flex: 1, padding: '0.5rem', background: selectedDate >= MAX_DATE ? '#4b5563' : '#2563eb', color: '#fff', borderRadius: '0.5rem', fontSize: '0.875rem', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >
               Next Day →
             </button>
           </div>
-          
-          {/* Quick Jump Buttons */}
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              onClick={() => setSelectedDate('2023-12-31')}
-              className="px-2 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 rounded transition-colors"
-            >
-              Latest (2023)
-            </button>
-            <button
-              onClick={() => setSelectedDate('2023-01-01')}
-              className="px-2 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 rounded transition-colors"
-            >
-              Start of 2023
-            </button>
-            <button
-              onClick={() => setSelectedDate('2022-01-01')}
-              className="px-2 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 rounded transition-colors"
-            >
-              Start of 2022
-            </button>
-            <button
-              onClick={() => setSelectedDate('2019-01-01')}
-              className="px-2 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 rounded transition-colors"
-            >
-              First Day
-            </button>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem' }}>
+            <button onClick={() => setSelectedDate('2023-12-31')} style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem', backgroundColor: '#374151', color: '#d1d5db', borderRadius: '0.375rem' }}>Latest (2023)</button>
+            <button onClick={() => setSelectedDate('2023-01-01')} style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem', backgroundColor: '#374151', color: '#d1d5db', borderRadius: '0.375rem' }}>Start of 2023</button>
+            <button onClick={() => setSelectedDate('2022-01-01')} style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem', backgroundColor: '#374151', color: '#d1d5db', borderRadius: '0.375rem' }}>Start of 2022</button>
+            <button onClick={() => setSelectedDate('2019-01-01')} style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem', backgroundColor: '#374151', color: '#d1d5db', borderRadius: '0.375rem' }}>First Day</button>
           </div>
-          
-          {/* Date Info */}
-          <div className="text-xs text-gray-400 text-center bg-gray-700/50 p-2 rounded">
-            Showing: {new Date(selectedDate).toLocaleDateString('en-US', { 
-              weekday: 'long', 
-              year: 'numeric', 
-              month: 'long', 
-              day: 'numeric' 
-            })}
+
+          <div style={{ fontSize: '0.75rem', color: '#9ca3af', textAlign: 'center', backgroundColor: 'rgba(55,65,81,0.5)', padding: '0.5rem', borderRadius: '0.5rem' }}>
+            Showing: {new Date(selectedDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
           </div>
         </div>
       </div>
 
-      {/* Animation / Time-lapse Controls */}
-      <div className="mb-6 border-2 border-purple-500/30 rounded-xl p-4 bg-purple-900/10">
-        <div className="flex items-center gap-2 mb-3">
-          <span className="text-xl">🎬</span>
-          <label className="block text-sm font-medium text-purple-300">Time-Lapse Animation</label>
+      <div style={{ marginBottom: '1.5rem', borderRadius: '0.75rem', padding: '1rem', background: 'rgba(124,58,237,0.04)', border: '2px solid rgba(124,58,237,0.18)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
+          <span style={{ fontSize: '1rem' }}>🎬</span>
+          <div style={{ fontSize: '0.875rem', fontWeight: 600, color: '#d1d5db' }}>Time-Lapse Animation</div>
         </div>
-        
-        {/* Animation Date Range */}
-        <div className="space-y-2 mb-3">
+
+        <div style={{ display: 'grid', gap: '0.5rem', marginBottom: '0.75rem' }}>
           <div>
-            <label className="block text-xs text-gray-400 mb-1">From Date</label>
-            <input
-              type="date"
-              value={animationStartDate}
-              onChange={(e) => setAnimationStartDate(e.target.value)}
-              min={MIN_DATE}
-              max={animationEndDate}
-              disabled={isAnimating}
-              className="w-full px-2 py-1 bg-gray-700 text-white rounded border border-purple-500/50 focus:border-purple-400 focus:outline-none text-xs disabled:opacity-50"
-            />
+            <label style={{ display: 'block', fontSize: '0.75rem', color: '#9ca3af', marginBottom: '0.25rem' }}>From Date</label>
+            <input type="date" value={animationStartDate} onChange={(e) => setAnimationStartDate(e.target.value)} min={MIN_DATE} max={animationEndDate} disabled={isAnimating} style={{ width: '100%', padding: '0.25rem', backgroundColor: '#374151', color: '#fff', borderRadius: '0.375rem', border: '1px solid rgba(124,58,237,0.3)', fontSize: '0.75rem' }} />
           </div>
           <div>
-            <label className="block text-xs text-gray-400 mb-1">To Date</label>
-            <input
-              type="date"
-              value={animationEndDate}
-              onChange={(e) => setAnimationEndDate(e.target.value)}
-              min={animationStartDate}
-              max={MAX_DATE}
-              disabled={isAnimating}
-              className="w-full px-2 py-1 bg-gray-700 text-white rounded border border-purple-500/50 focus:border-purple-400 focus:outline-none text-xs disabled:opacity-50"
-            />
+            <label style={{ display: 'block', fontSize: '0.75rem', color: '#9ca3af', marginBottom: '0.25rem' }}>To Date</label>
+            <input type="date" value={animationEndDate} onChange={(e) => setAnimationEndDate(e.target.value)} min={animationStartDate} max={MAX_DATE} disabled={isAnimating} style={{ width: '100%', padding: '0.25rem', backgroundColor: '#374151', color: '#fff', borderRadius: '0.375rem', border: '1px solid rgba(124,58,237,0.3)', fontSize: '0.75rem' }} />
           </div>
         </div>
 
-        {/* Speed Control */}
-        <div className="mb-3">
-          <div className="flex justify-between items-center mb-1">
-            <label className="text-xs text-gray-400">Speed</label>
-            <span className="text-xs text-purple-300 font-mono">
-              {animationSpeed}ms/day
-            </span>
+        <div style={{ marginBottom: '0.75rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
+            <label style={{ fontSize: '0.75rem', color: '#9ca3af' }}>Speed</label>
+            <span style={{ fontSize: '0.75rem', color: '#c4b5fd', fontFamily: 'monospace' }}>{animationSpeed}ms/day</span>
           </div>
-          <input
-            type="range"
-            min="100"
-            max="2000"
-            step="100"
-            value={animationSpeed}
-            onChange={(e) => setAnimationSpeed(parseInt(e.target.value))}
-            disabled={isAnimating}
-            className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer disabled:opacity-50"
-          />
-          <div className="flex justify-between text-xs text-gray-500 mt-1">
-            <span>Fast</span>
-            <span>Slow</span>
-          </div>
+          <input type="range" min={100} max={2000} step={100} value={animationSpeed} onChange={(e) => setAnimationSpeed(parseInt(e.target.value))} disabled={isAnimating} style={{ width: '100%', height: '0.5rem', backgroundColor: '#374151', borderRadius: '0.5rem', cursor: 'pointer' }} />
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: '#6b7280', marginTop: '0.25rem' }}><span>Fast</span><span>Slow</span></div>
         </div>
 
-        {/* Control Buttons */}
-        <div className="flex gap-2">
+        <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
           {!isAnimating ? (
-            <button
-              onClick={onStartAnimation}
-              className="flex-1 px-3 py-2 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white rounded-lg text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-1"
-            >
-              ▶️ Play
-            </button>
+            <button onClick={onStartAnimation} style={{ flex: 1, padding: '0.5rem', background: 'linear-gradient(90deg,#16a34a,#10b981)', color: '#fff', borderRadius: '0.5rem', fontWeight: 700 }}>▶️ Play</button>
           ) : (
-            <button
-              onClick={onStopAnimation}
-              className="flex-1 px-3 py-2 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 text-white rounded-lg text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-1"
-            >
-              ⏸️ Pause
-            </button>
+            <button onClick={onStopAnimation} style={{ flex: 1, padding: '0.5rem', background: 'linear-gradient(90deg,#dc2626,#ef4444)', color: '#fff', borderRadius: '0.5rem', fontWeight: 700 }}>⏸️ Pause</button>
           )}
-          <button
-            onClick={onResetAnimation}
-            className="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg text-sm font-semibold transition-colors"
-            title="Reset to start"
-          >
-            🔄
-          </button>
+          <button onClick={onResetAnimation} title="Reset to start" style={{ padding: '0.5rem', backgroundColor: '#374151', color: '#d1d5db', borderRadius: '0.5rem', fontWeight: 600 }}>🔁</button>
         </div>
 
-        {/* Animation Status */}
         {isAnimating && (
-          <div className="mt-3 text-xs text-center">
-            <div className="bg-green-500/20 border border-green-500/50 text-green-300 px-2 py-1 rounded-full inline-flex items-center gap-1">
-              <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+          <div style={{ marginTop: '0.75rem', fontSize: '0.75rem', textAlign: 'center' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.25rem 0.5rem', borderRadius: '9999px', background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.3)', color: '#86efac' }}>
+              <span style={{ width: '0.5rem', height: '0.5rem', backgroundColor: '#34d399', borderRadius: '9999px', boxShadow: '0 0 6px rgba(52,211,153,0.6)' }}></span>
               Playing...
             </div>
           </div>
         )}
-        
-        {/* Date Range Info */}
-        <div className="mt-2 text-xs text-gray-400 text-center">
+
+        <div style={{ marginTop: '0.5rem', fontSize: '0.75rem', color: '#9ca3af', textAlign: 'center' }}>
           {Math.ceil((new Date(animationEndDate).getTime() - new Date(animationStartDate).getTime()) / (1000 * 60 * 60 * 24))} days
         </div>
       </div>
 
-      {/* Metric Selector */}
-      <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-300 mb-2">Metric</label>
-        <div className="space-y-2">
+      <div style={{ marginBottom: '1.5rem' }}>
+        <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: '#d1d5db', marginBottom: '0.5rem' }}>Metric</label>
+        <div style={{ display: 'grid', gap: '0.5rem' }}>
           {Object.entries(METRICS).map(([key, { name }]) => (
-            <button
-              key={key}
-              onClick={() => setSelectedMetric(key as Metric)}
-              className={`w-full text-left p-3 rounded-lg transition-colors text-sm ${
-                selectedMetric === key
-                  ? 'bg-blue-600 text-white font-semibold'
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-              }`}
-            >
+            <button key={key} onClick={() => setSelectedMetric(key as Metric)} style={{ width: '100%', textAlign: 'left', padding: '0.75rem', borderRadius: '0.5rem', fontSize: '0.875rem', transition: 'background-color 0.15s ease', backgroundColor: selectedMetric === key ? '#2563eb' : '#374151', color: selectedMetric === key ? '#fff' : '#d1d5db', fontWeight: selectedMetric === key ? 700 : 400 }}>
               {name}
             </button>
           ))}
         </div>
       </div>
-      
-      {/* High Risk Zone Filter */}
-      <div className="mb-6">
-          <div className="flex items-center justify-between">
-              <label htmlFor="high-risk-toggle" className="text-sm font-medium text-gray-300">
-                  High-Risk Zones (&gt; {HIGH_RISK_THRESHOLD})
-              </label>
-              <div className="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
-                  <input
-                      type="checkbox"
-                      name="high-risk-toggle"
-                      id="high-risk-toggle"
-                      checked={showHighRisk}
-                      onChange={e => setShowHighRisk(e.target.checked)}
-                      className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"
-                      style={{
-                          left: showHighRisk ? '1rem' : '0',
-                          transition: 'left 0.2s ease-in-out'
-                      }}
-                  />
-                  <label htmlFor="high-risk-toggle" className={`toggle-label block overflow-hidden h-6 rounded-full cursor-pointer ${showHighRisk ? 'bg-blue-600' : 'bg-gray-600'}`}></label>
+
+      <div style={{ marginBottom: '1.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <label htmlFor="high-risk-toggle" style={{ fontSize: '0.875rem', fontWeight: 600, color: '#d1d5db' }}>High-Risk Zones (&gt; {HIGH_RISK_THRESHOLD})</label>
+              <div style={{ position: 'relative', width: '2.5rem', height: '1.5rem' }}>
+                  <input type="checkbox" name="high-risk-toggle" id="high-risk-toggle" checked={showHighRisk} onChange={e => setShowHighRisk(e.target.checked)} style={{ position: 'absolute', width: '1.25rem', height: '1.25rem', borderRadius: '9999px', background: '#fff', border: '2px solid #e5e7eb', cursor: 'pointer', left: showHighRisk ? '1rem' : '0', transition: 'left 0.2s ease-in-out' }} />
+                  <label htmlFor="high-risk-toggle" style={{ display: 'block', overflow: 'hidden', height: '1.5rem', borderRadius: '9999px', cursor: 'pointer', background: showHighRisk ? '#2563eb' : '#4b5563', width: '2.5rem' }} />
               </div>
           </div>
       </div>
 
-
-      {/* City Search */}
-      <div className="mb-6">
-        <label htmlFor="city-search" className="block text-sm font-medium text-gray-300 mb-2">
-          Search City
-        </label>
+      <div style={{ marginBottom: '1.5rem' }}>
+        <label htmlFor="city-search" style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: '#d1d5db', marginBottom: '0.5rem' }}>Search City</label>
         <input
           type="text"
           id="city-search"
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
           placeholder="e.g., Tokyo"
-          className="w-full bg-gray-700 text-white rounded-md border-gray-600 focus:ring-blue-500 focus:border-blue-500 transition"
+          style={{ width: '100%', backgroundColor: '#374151', color: '#fff', borderRadius: '0.375rem', border: '1px solid #4b5563', padding: '0.5rem', transition: 'box-shadow 0.15s ease' }}
           list="city-suggestions"
         />
         <datalist id="city-suggestions">
@@ -329,12 +239,8 @@ const Sidebar: React.FC<SidebarProps> = ({
         </datalist>
       </div>
 
-       {/* Download Button */}
        <div>
-        <button
-          onClick={onDownload}
-          className="w-full flex items-center justify-center gap-2 p-3 rounded-lg transition-colors text-sm bg-green-600 text-white font-semibold hover:bg-green-700"
-        >
+        <button onClick={onDownload} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.75rem', borderRadius: '0.5rem', background: '#16a34a', color: '#fff', fontWeight: 700 }}> 
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
           Download Filtered Data
         </button>
