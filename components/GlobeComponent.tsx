@@ -163,14 +163,14 @@ const GlobeComponent: React.FC<GlobeComponentProps> = ({
   // Simplified version for debugging
   if (pointsData.length === 0) {
     return (
-      <div className="w-full h-full globe-container flex items-center justify-center">
-        <div className="text-white text-xl">No data available</div>
+      <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ color: '#fff', fontSize: '1.25rem' }}>No data available</div>
       </div>
     );
   }
 
   return (
-    <div className="w-full h-full globe-container">
+    <div style={{ width: '100%', height: '100%' }}>
       <Globe
         ref={globeEl}
         globeImageUrl="https://unpkg.com/three-globe/example/img/earth-night.jpg"
@@ -188,11 +188,11 @@ const GlobeComponent: React.FC<GlobeComponentProps> = ({
         pointsTransitionDuration={1000}
         onPointClick={onPointClick}
         pointLabel={(d: any) => `
-          <div class="bg-gray-800/95 text-white p-3 rounded-lg shadow-2xl border border-gray-600">
-            <div class="font-bold text-xl mb-1 text-blue-300">${d.City}</div>
-            <div class="text-sm mb-1">
-              <span class="text-gray-400">${METRICS[selectedMetric].name}:</span> 
-              <span class="text-yellow-300 font-semibold">${(d[selectedMetric] as number).toFixed(3)}</span>
+          <div style="background: rgba(31, 41, 55, 0.95); color: #fff; padding: 0.75rem; border-radius: 0.5rem; box-shadow: 0 8px 40px rgba(2,6,23,0.6); border: 1px solid rgba(75,85,99,0.6); max-width: 20rem;">
+            <div style="font-weight: 700; font-size: 1.125rem; margin-bottom: 0.25rem; color: #60a5fa;">${d.City}</div>
+            <div style="font-size: 0.875rem; margin-bottom: 0.25rem;">
+              <span style="color: #94a3b8">${METRICS[selectedMetric].name}:</span>
+              <span style="color: #facc15; font-weight: 700; margin-left: 0.25rem">${(d[selectedMetric] as number).toFixed(3)}</span>
             </div>
           </div>
         `}

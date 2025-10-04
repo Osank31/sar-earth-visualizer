@@ -17,30 +17,26 @@ const App: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedCity, setSelectedCity] = useState<CityData | null>(null);
   const [visualizationMode, setVisualizationMode] = useState<'mesh' | 'hexbin' | 'rings' | 'hybrid'>('hybrid');
-  
+
   // Animation controls
   const [isAnimating, setIsAnimating] = useState<boolean>(false);
   const [animationStartDate, setAnimationStartDate] = useState<string>(INITIAL_SELECTED_DATE);
   const [animationEndDate, setAnimationEndDate] = useState<string>('2023-01-31');
   const [animationSpeed, setAnimationSpeed] = useState<number>(500); // ms per frame
-  
+
   const METRICS = getMetrics();
 
   const filteredData = useMemo(() => {
     if (loading) return [];
-    
-    // Filter by exact date match (single day only)
     let dataForDate = allData.filter(d => d.date === selectedDate);
-    
-    console.log(`Showing data for ${selectedDate}:`, dataForDate.length, 'records');
 
     if (showHighRisk) {
       dataForDate = dataForDate.filter(d => (d[selectedMetric] as number) >= HIGH_RISK_THRESHOLD);
     }
-    
+
     if (searchQuery) {
-        const lowerCaseQuery = searchQuery.toLowerCase();
-        dataForDate = dataForDate.filter(d => d.City.toLowerCase().includes(lowerCaseQuery));
+      const lowerCaseQuery = searchQuery.toLowerCase();
+      dataForDate = dataForDate.filter(d => d.City.toLowerCase().includes(lowerCaseQuery));
     }
 
     return dataForDate;
@@ -48,7 +44,7 @@ const App: React.FC = () => {
 
   const globePoints = useMemo(() => {
     const metricConfig = METRICS[selectedMetric];
-    const points = filteredData.map(d => {
+    return filteredData.map(d => {
       const value = d[selectedMetric] as number;
       return {
         ...d,
@@ -56,31 +52,22 @@ const App: React.FC = () => {
         color: metricConfig.colorScale(value),
       };
     });
-    console.log('Globe points created:', points.length);
-    console.log('First point:', points[0]);
-    return points;
   }, [filteredData, selectedMetric, METRICS]);
 
-  // Animation loop effect
   useEffect(() => {
     if (!isAnimating) return;
-    
     const timer = setInterval(() => {
       setSelectedDate(currentDate => {
         const current = new Date(currentDate);
         current.setDate(current.getDate() + 1);
         const nextDate = current.toISOString().split('T')[0];
-        
-        // Check if we've reached the end
         if (nextDate > animationEndDate) {
           setIsAnimating(false);
-          return currentDate; // Stay at current date
+          return currentDate;
         }
-        
         return nextDate;
       });
     }, animationSpeed);
-    
     return () => clearInterval(timer);
   }, [isAnimating, animationSpeed, animationEndDate]);
 
@@ -117,69 +104,125 @@ const App: React.FC = () => {
 
   const metricConfig = METRICS[selectedMetric];
 
+  // Inline styles for layout
+  const rootStyle: React.CSSProperties = {
+    height: '100vh',
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    backgroundColor: '#0f172a',
+    fontFamily:
+      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif",
+    position: 'relative',
+    overflow: 'hidden'
+  };
+
+  const headerStyle: React.CSSProperties = {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    padding: '1rem',
+    zIndex: 20,
+    width: '100%',
+    textAlign: 'center'
+  };
+
+  const titleStyle: React.CSSProperties = {
+    fontSize: '1.125rem',
+    fontWeight: 700,
+    color: '#fff',
+    textShadow: '0 1px 2px rgba(0,0,0,0.6)'
+  };
+
+  const subtitleStyle: React.CSSProperties = {
+    fontSize: '0.75rem',
+    color: '#d1d5db',
+    maxWidth: '42rem',
+    margin: '0.25rem auto 0'
+  };
+
+  const mainStyle: React.CSSProperties = {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    position: 'relative'
+  };
+
+  const sidebarContainerStyle: React.CSSProperties = {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    height: '100%',
+    zIndex: 10,
+    padding: '0.5rem'
+  };
+
+  const contentStyle: React.CSSProperties = { flex: 1, minHeight: 0, position: 'relative' };
+
   return (
-    <div className="h-screen w-screen flex flex-col bg-gray-900 font-sans relative overflow-hidden">
-      <header className="absolute top-0 left-0 p-4 z-20 w-full text-center md:text-left">
-        <h1 className="text-xl md:text-3xl font-bold text-white drop-shadow-lg">Through the Radar Looking Glass</h1>
-        <p className="text-xs md:text-sm text-gray-300 max-w-2xl">
+    <div style={rootStyle}>
+      <header style={headerStyle}>
+        <h1 style={titleStyle}>Through the Radar Looking Glass</h1>
+        <p style={subtitleStyle}>
           SAR uses radar to reveal Earth's roughness and moisture, penetrating clouds for day/night imaging.
         </p>
       </header>
 
-      <main className="flex-1 flex flex-col md:flex-row relative">
-        <div className="md:absolute md:top-0 md:right-0 md:h-full md:w-auto z-10 p-2 md:max-h-screen md:overflow-hidden">
-            <Sidebar
-              selectedDate={selectedDate}
-              setSelectedDate={setSelectedDate}
-              selectedMetric={selectedMetric}
-              setSelectedMetric={setSelectedMetric}
-              showHighRisk={showHighRisk}
-              setShowHighRisk={setShowHighRisk}
-              searchQuery={searchQuery}
-              setSearchQuery={setSearchQuery}
-              cityNames={cityNames}
-              onDownload={handleDownload}
-              visualizationMode={visualizationMode}
-              onVisualizationModeChange={setVisualizationMode}
-              isAnimating={isAnimating}
-              animationStartDate={animationStartDate}
-              setAnimationStartDate={setAnimationStartDate}
-              animationEndDate={animationEndDate}
-              setAnimationEndDate={setAnimationEndDate}
-              animationSpeed={animationSpeed}
-              setAnimationSpeed={setAnimationSpeed}
-              onStartAnimation={handleStartAnimation}
-              onStopAnimation={handleStopAnimation}
-              onResetAnimation={handleResetAnimation}
-            />
+      <main style={mainStyle}>
+        <div style={sidebarContainerStyle}>
+          <Sidebar
+            selectedDate={selectedDate}
+            setSelectedDate={setSelectedDate}
+            selectedMetric={selectedMetric}
+            setSelectedMetric={setSelectedMetric}
+            showHighRisk={showHighRisk}
+            setShowHighRisk={setShowHighRisk}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            cityNames={cityNames}
+            onDownload={handleDownload}
+            visualizationMode={visualizationMode}
+            onVisualizationModeChange={setVisualizationMode}
+            isAnimating={isAnimating}
+            animationStartDate={animationStartDate}
+            setAnimationStartDate={setAnimationStartDate}
+            animationEndDate={animationEndDate}
+            setAnimationEndDate={setAnimationEndDate}
+            animationSpeed={animationSpeed}
+            setAnimationSpeed={setAnimationSpeed}
+            onStartAnimation={handleStartAnimation}
+            onStopAnimation={handleStopAnimation}
+            onResetAnimation={handleResetAnimation}
+          />
         </div>
-        <div className="flex-1 min-h-0 relative">
+
+        <div style={contentStyle}>
           {loading ? (
-            <div className="flex flex-col items-center justify-center h-full text-white">
-              <div className="text-2xl mb-4">🌍 Loading Environmental Data...</div>
-              <div className="text-sm text-gray-400 mb-4">Loading 803,442 records from 500 cities</div>
-              <div className="w-64 h-2 bg-gray-700 rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-blue-500 to-purple-500 animate-pulse"></div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#fff' }}>
+              <div style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>🌍 Loading Environmental Data...</div>
+              <div style={{ fontSize: '0.875rem', color: '#94a3b8', marginBottom: '1rem' }}>Loading 803,442 records from 500 cities</div>
+              <div style={{ width: '16rem', height: '0.5rem', backgroundColor: '#374151', borderRadius: '9999px', overflow: 'hidden' }}>
+                <div style={{ height: '100%', background: 'linear-gradient(90deg,#3b82f6,#7c3aed)', opacity: 0.9 }} />
               </div>
-              <div className="text-xs text-gray-500 mt-4">This may take 10-30 seconds on first load</div>
-              <div className="text-xs text-gray-600 mt-2">Check browser console (F12) if stuck</div>
+              <div style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '1rem' }}>This may take 10-30 seconds on first load</div>
+              <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '0.5rem' }}>Check browser console (F12) if stuck</div>
             </div>
           ) : (
-            <GlobeComponent 
-                pointsData={globePoints} 
-                onPointClick={handlePointClick}
-                selectedMetric={selectedMetric}
-                visualizationMode={visualizationMode}
+            <GlobeComponent
+              pointsData={globePoints}
+              onPointClick={handlePointClick}
+              selectedMetric={selectedMetric}
+              visualizationMode={visualizationMode}
             />
           )}
           {!loading && <Legend metricConfig={metricConfig} />}
         </div>
       </main>
-      
-      <footer className="absolute bottom-0 right-0 p-2 text-xs text-gray-500 z-20">
+
+      <footer style={{ position: 'absolute', bottom: 0, right: 0, padding: '0.5rem', fontSize: '0.75rem', color: '#9ca3af', zIndex: 20 }}>
         Data simulated from NASA SAR instruments like NISAR, Sentinel-1
       </footer>
-      
+
       <CityModal cityData={selectedCity} onClose={() => setSelectedCity(null)} />
     </div>
   );

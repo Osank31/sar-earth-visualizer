@@ -384,22 +384,22 @@ const GlobeComponentAdvanced: React.FC<GlobeComponentProps> = ({
   };
 
   const customLayerLabel = (d: any) => `
-    <div class="bg-gradient-to-br from-gray-900 to-gray-800 text-white p-4 rounded-xl shadow-2xl border-2 border-blue-500/50 backdrop-blur-md">
-      <div class="font-bold text-2xl mb-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">
+    <div style="background: linear-gradient(180deg,#0b1220,#111827); color: #fff; padding: 1rem; border-radius: 1rem; box-shadow: 0 20px 60px rgba(2,6,23,0.7); border: 2px solid rgba(59,130,246,0.2); backdrop-filter: blur(6px); max-width: 22rem;">
+      <div style="font-weight: 700; font-size: 1.25rem; margin-bottom: 0.5rem; background: linear-gradient(90deg,#60a5fa,#22d3ee); -webkit-background-clip: text; background-clip: text; color: transparent;">
         ${(d as SarData).City}
       </div>
-      <div class="text-sm mb-2 flex items-center gap-2">
-        <span class="text-gray-400">${METRICS[selectedMetric].name}:</span> 
-        <span class="text-yellow-300 font-bold text-lg">${((d as SarData)[selectedMetric] as number).toFixed(3)}</span>
+      <div style="font-size: 0.875rem; margin-bottom: 0.5rem; display:flex; align-items:center; gap:0.5rem;">
+        <span style="color: #9ca3af">${METRICS[selectedMetric].name}:</span>
+        <span style="color: #fbbf24; font-weight: 700; font-size: 1.125rem">${((d as SarData)[selectedMetric] as number).toFixed(3)}</span>
       </div>
-      <div class="w-full bg-gray-700 rounded-full h-2 mb-2">
-        <div class="bg-gradient-to-r from-blue-500 to-cyan-400 h-2 rounded-full" style="width: ${((d as SarData)[selectedMetric] as number) * 100}%"></div>
+      <div style="width:100%; background: #374151; border-radius: 9999px; height: 0.5rem; margin-bottom: 0.5rem; overflow: hidden;">
+        <div style="background: linear-gradient(90deg,#3b82f6,#06b6d4); height:100%; border-radius:9999px; width: ${((d as SarData)[selectedMetric] as number) * 100}%"></div>
       </div>
-      <div class="text-xs text-gray-300 italic mt-2 max-w-xs">
+      <div style="font-size: 0.75rem; color:#cbd5e1; font-style: italic; margin-top:0.5rem; max-width:18rem">
         ${METRICS[selectedMetric].tooltip}
       </div>
     </div>
-  `;
+`;
 
   const showMesh = visualizationMode === 'mesh' || visualizationMode === 'hybrid';
   const showRings = visualizationMode === 'rings' || visualizationMode === 'hybrid';
@@ -407,14 +407,29 @@ const GlobeComponentAdvanced: React.FC<GlobeComponentProps> = ({
 
   if (pointsData.length === 0) {
     return (
-      <div className="w-full h-full globe-container flex items-center justify-center">
-        <div className="text-white text-xl">Loading environmental data...</div>
+      <div
+        style={{
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          position: 'relative'
+        }}
+      >
+        <div style={{ color: '#fff', fontSize: '1.25rem' }}>Loading environmental data...</div>
       </div>
     );
   }
 
   return (
-    <div className="w-full h-full globe-container relative">
+    <div
+      style={{
+        width: '100%',
+        height: '100%',
+        position: 'relative'
+      }}
+    >
       <Globe
         ref={globeEl}
         globeImageUrl="https://unpkg.com/three-globe/example/img/earth-night.jpg"
@@ -462,50 +477,121 @@ const GlobeComponentAdvanced: React.FC<GlobeComponentProps> = ({
       />
       
       {globeReady && (
-        <div className="absolute top-4 right-4 bg-green-500/20 border border-green-400/50 text-green-300 px-3 py-1 rounded-full text-xs backdrop-blur-sm flex items-center gap-2">
-          <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+        <div
+          style={{
+            position: 'absolute',
+            top: '1rem',
+            right: '1rem',
+            backgroundColor: 'rgba(34,197,94,0.2)',
+            border: '1px solid rgba(74,222,128,0.5)',
+            color: '#86efac',
+            padding: '0.25rem 0.75rem',
+            borderRadius: '9999px',
+            fontSize: '0.75rem',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem'
+          }}
+        >
+          <span
+            style={{
+              width: '0.5rem',
+              height: '0.5rem',
+              backgroundColor: '#4ade80',
+              borderRadius: '9999px'
+            }}
+          />
           ✨ Advanced Shaders Active
         </div>
       )}
       
       {/* Depth Map Controls - Moved to LEFT side */}
-      <div className="absolute bottom-4 left-4 flex flex-col gap-2 z-50">
+      <div
+        style={{
+          position: 'absolute',
+          bottom: '1rem',
+          left: '1rem',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '0.5rem',
+          zIndex: 50
+        }}
+      >
         <button
           onClick={() => setShowControls(!showControls)}
-          className="bg-blue-600/80 hover:bg-blue-500/90 text-white px-4 py-2 rounded-lg backdrop-blur-md border border-blue-400/50 shadow-lg transition-all duration-200 text-sm font-semibold"
+          style={{
+            backgroundColor: 'rgba(37,99,235,0.8)',
+            color: '#fff',
+            padding: '0.5rem 1rem',
+            borderRadius: '0.5rem',
+            backdropFilter: 'blur(6px)',
+            border: '1px solid rgba(96,165,250,0.5)',
+            boxShadow: '0 10px 25px rgba(0,0,0,0.35)',
+            fontSize: '0.875rem',
+            fontWeight: 600
+          }}
         >
           {showControls ? '🎛️ Hide Controls' : '🎛️ Show Controls'}
         </button>
         
         {showControls && (
-          <div className="bg-gray-900/90 backdrop-blur-md border border-gray-700/50 rounded-xl p-4 shadow-2xl min-w-[280px]">
-            <div className="text-white font-bold text-sm mb-3 flex items-center gap-2 border-b border-gray-700 pb-2">
-              <span className="text-blue-400">🌊</span>
+          <div
+            style={{
+              backgroundColor: 'rgba(17,24,39,0.9)',
+              backdropFilter: 'blur(6px)',
+              border: '1px solid rgba(55,65,81,0.5)',
+              borderRadius: '0.75rem',
+              padding: '1rem',
+              boxShadow: '0 25px 50px rgba(0,0,0,0.5)',
+              minWidth: '280px'
+            }}
+          >
+            <div
+              style={{
+                color: '#fff',
+                fontWeight: 700,
+                fontSize: '0.875rem',
+                marginBottom: '0.75rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                borderBottom: '1px solid #374151',
+                paddingBottom: '0.5rem'
+              }}
+            >
+              <span style={{ color: '#60a5fa' }}>🌊</span>
               Depth Map Controls
             </div>
             
             {/* Enable/Disable Depth Overlay */}
-            <div className="mb-4 pb-4 border-b border-gray-700">
+            <div style={{ marginBottom: '1rem', paddingBottom: '1rem', borderBottom: '1px solid #374151' }}>
               <button
                 onClick={() => setDepthOverlayEnabled(!depthOverlayEnabled)}
-                className={`w-full px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
-                  depthOverlayEnabled
-                    ? 'bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white'
-                    : 'bg-gradient-to-r from-gray-700 to-gray-600 hover:from-gray-600 hover:to-gray-500 text-gray-300'
-                }`}
+                style={{
+                  width: '100%',
+                  padding: '0.5rem 0.75rem',
+                  borderRadius: '0.5rem',
+                  fontSize: '0.875rem',
+                  fontWeight: 600,
+                  color: depthOverlayEnabled ? '#fff' : '#d1d5db',
+                  background: depthOverlayEnabled
+                    ? 'linear-gradient(90deg,#16a34a,#22c55e)'
+                    : 'linear-gradient(90deg,#374151,#4b5563)'
+                }}
               >
                 {depthOverlayEnabled ? '✅ Depth Overlay ON' : '⭕ Depth Overlay OFF'}
               </button>
-              <p className="text-xs text-gray-400 mt-2 text-center">
+              <p style={{ fontSize: '0.75rem', color: '#9ca3af', marginTop: '0.5rem', textAlign: 'center' }}>
                 {depthOverlayEnabled ? 'Showing 3D depth map' : 'Basic globe only'}
               </p>
             </div>
             
             {/* Opacity Slider */}
-            <div className={`mb-4 ${!depthOverlayEnabled && 'opacity-50 pointer-events-none'}`}>
-              <div className="flex justify-between items-center mb-2">
-                <label className="text-gray-300 text-xs font-semibold">Overlay Opacity</label>
-                <span className="text-blue-400 text-xs font-mono bg-blue-950/50 px-2 py-1 rounded">
+            <div style={{ marginBottom: '1rem', opacity: depthOverlayEnabled ? 1 : 0.5, pointerEvents: depthOverlayEnabled ? 'auto' as const : 'none' as const }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                <label style={{ color: '#d1d5db', fontSize: '0.75rem', fontWeight: 600 }}>Overlay Opacity</label>
+                <span style={{ color: '#60a5fa', fontSize: '0.75rem', fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace', backgroundColor: 'rgba(23,37,84,0.5)', padding: '0.25rem 0.5rem', borderRadius: '0.375rem' }}>
                   {(depthOpacity * 100).toFixed(0)}%
                 </span>
               </div>
@@ -516,19 +602,19 @@ const GlobeComponentAdvanced: React.FC<GlobeComponentProps> = ({
                 step="0.05"
                 value={depthOpacity}
                 onChange={(e) => setDepthOpacity(parseFloat(e.target.value))}
-                className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider-blue"
+                style={{ width: '100%', height: '0.5rem', backgroundColor: '#374151', borderRadius: '0.5rem', appearance: 'none' as any, cursor: 'pointer' }}
               />
-              <div className="flex justify-between text-xs text-gray-500 mt-1">
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: '#6b7280', marginTop: '0.25rem' }}>
                 <span>Invisible</span>
                 <span>Opaque</span>
               </div>
             </div>
             
             {/* Displacement Strength Slider */}
-            <div className={`mb-4 ${!depthOverlayEnabled && 'opacity-50 pointer-events-none'}`}>
-              <div className="flex justify-between items-center mb-2">
-                <label className="text-gray-300 text-xs font-semibold">Depth Strength</label>
-                <span className="text-green-400 text-xs font-mono bg-green-950/50 px-2 py-1 rounded">
+            <div style={{ marginBottom: '1rem', opacity: depthOverlayEnabled ? 1 : 0.5, pointerEvents: depthOverlayEnabled ? 'auto' as const : 'none' as const }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                <label style={{ color: '#d1d5db', fontSize: '0.75rem', fontWeight: 600 }}>Depth Strength</label>
+                <span style={{ color: '#4ade80', fontSize: '0.75rem', fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace', backgroundColor: 'rgba(5,46,22,0.5)', padding: '0.25rem 0.5rem', borderRadius: '0.375rem' }}>
                   {displacementStrength.toFixed(1)}x
                 </span>
               </div>
@@ -539,19 +625,19 @@ const GlobeComponentAdvanced: React.FC<GlobeComponentProps> = ({
                 step="0.1"
                 value={displacementStrength}
                 onChange={(e) => setDisplacementStrength(parseFloat(e.target.value))}
-                className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider-green"
+                style={{ width: '100%', height: '0.5rem', backgroundColor: '#374151', borderRadius: '0.5rem', appearance: 'none' as any, cursor: 'pointer' }}
               />
-              <div className="flex justify-between text-xs text-gray-500 mt-1">
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: '#6b7280', marginTop: '0.25rem' }}>
                 <span>Flat</span>
                 <span>Extreme</span>
               </div>
             </div>
             
             {/* Pulse Speed Slider */}
-            <div className={`mb-4 ${!depthOverlayEnabled && 'opacity-50 pointer-events-none'}`}>
-              <div className="flex justify-between items-center mb-2">
-                <label className="text-gray-300 text-xs font-semibold">Pulse Speed</label>
-                <span className="text-purple-400 text-xs font-mono bg-purple-950/50 px-2 py-1 rounded">
+            <div style={{ marginBottom: '1rem', opacity: depthOverlayEnabled ? 1 : 0.5, pointerEvents: depthOverlayEnabled ? 'auto' as const : 'none' as const }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                <label style={{ color: '#d1d5db', fontSize: '0.75rem', fontWeight: 600 }}>Pulse Speed</label>
+                <span style={{ color: '#a78bfa', fontSize: '0.75rem', fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace', backgroundColor: 'rgba(46,16,101,0.5)', padding: '0.25rem 0.5rem', borderRadius: '0.375rem' }}>
                   {pulseSpeed.toFixed(1)}x
                 </span>
               </div>
@@ -562,9 +648,9 @@ const GlobeComponentAdvanced: React.FC<GlobeComponentProps> = ({
                 step="0.1"
                 value={pulseSpeed}
                 onChange={(e) => setPulseSpeed(parseFloat(e.target.value))}
-                className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider-purple"
+                style={{ width: '100%', height: '0.5rem', backgroundColor: '#374151', borderRadius: '0.5rem', appearance: 'none' as any, cursor: 'pointer' }}
               />
-              <div className="flex justify-between text-xs text-gray-500 mt-1">
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: '#6b7280', marginTop: '0.25rem' }}>
                 <span>Static</span>
                 <span>Fast</span>
               </div>
@@ -577,7 +663,16 @@ const GlobeComponentAdvanced: React.FC<GlobeComponentProps> = ({
                 setDisplacementStrength(2.0);
                 setPulseSpeed(2.0);
               }}
-              className="w-full bg-gradient-to-r from-gray-700 to-gray-600 hover:from-gray-600 hover:to-gray-500 text-white px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-200 border border-gray-500/50"
+              style={{
+                width: '100%',
+                background: 'linear-gradient(90deg,#374151,#4b5563)',
+                color: '#fff',
+                padding: '0.5rem 0.75rem',
+                borderRadius: '0.5rem',
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                border: '1px solid rgba(107,114,128,0.5)'
+              }}
             >
               🔄 Reset to Defaults
             </button>
