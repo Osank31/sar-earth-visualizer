@@ -9,15 +9,25 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body {
-      background-color: #0c0c1d;
+      background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
       color: #e5e7eb;
+      overflow: hidden;
     }
+    
+    .globe-container {
+      position: relative;
+      background: transparent;
+    }
+    
     .globe-container canvas {
         cursor: grab;
+        filter: drop-shadow(0 0 20px rgba(100, 180, 255, 0.3));
     }
+    
     .globe-container canvas:active {
         cursor: grabbing;
     }
+    
     .marker-tooltip {
       position: absolute;
       transform: translate(-50%, -100%);
@@ -29,6 +39,133 @@
       pointer-events: none;
       white-space: nowrap;
       z-index: 10;
+    }
+    
+    /* Multi-layer atmospheric glow */
+    .globe-container::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 120%;
+      height: 120%;
+      background: radial-gradient(
+        circle,
+        rgba(100, 180, 255, 0.2) 0%,
+        rgba(80, 150, 255, 0.1) 30%,
+        rgba(60, 120, 255, 0.05) 50%,
+        transparent 70%
+      );
+      pointer-events: none;
+      z-index: 1;
+      animation: pulse-atmosphere 4s ease-in-out infinite;
+    }
+    
+    .globe-container::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 140%;
+      height: 140%;
+      background: radial-gradient(
+        circle,
+        transparent 0%,
+        rgba(100, 180, 255, 0.03) 60%,
+        rgba(150, 200, 255, 0.08) 80%,
+        transparent 100%
+      );
+      pointer-events: none;
+      z-index: 0;
+      animation: pulse-outer 6s ease-in-out infinite;
+    }
+    
+    @keyframes pulse-atmosphere {
+      0%, 100% {
+        opacity: 0.6;
+        transform: translate(-50%, -50%) scale(1);
+      }
+      50% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.02);
+      }
+    }
+    
+    @keyframes pulse-outer {
+      0%, 100% {
+        opacity: 0.4;
+        transform: translate(-50%, -50%) scale(1);
+      }
+      50% {
+        opacity: 0.7;
+        transform: translate(-50%, -50%) scale(1.05);
+      }
+    }
+    
+    /* Pulsing animation for high-risk indicators */
+    @keyframes pulse-glow {
+      0%, 100% {
+        opacity: 0.6;
+        filter: brightness(1) drop-shadow(0 0 10px currentColor);
+      }
+      50% {
+        opacity: 1;
+        filter: brightness(1.6) drop-shadow(0 0 25px currentColor);
+      }
+    }
+    
+    .high-risk-indicator {
+      animation: pulse-glow 2s ease-in-out infinite;
+    }
+    
+    /* Stars background animation */
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+    
+    .stars {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+    }
+    
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle 3s infinite;
+    }
+    
+    /* Gradient text effects */
+    .gradient-text {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    /* Glass morphism sidebar */
+    .glass-panel {
+      background: rgba(17, 25, 40, 0.75);
+      backdrop-filter: blur(16px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.125);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+    
+    /* Depth map visualization overlay */
+    .depth-overlay {
+      mix-blend-mode: screen;
+      opacity: 0.3;
+      pointer-events: none;
     }
   </style>
   <link rel="stylesheet" href="/index.css">

@@ -3,7 +3,7 @@ export interface SarData {
   City: string;
   Latitude: number;
   Longitude: number;
-  date: string;
+  date: string; // Format: YYYY-MM-DD
   Soil_Moisture: number;
   Flood_Inundation_Index: number;
   Vegetation_Density: number;

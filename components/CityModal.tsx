@@ -13,8 +13,10 @@ const CityModal: React.FC<CityModalProps> = ({ cityData, onClose }) => {
 
   const METRICS = getMetrics();
 
+  // Format date for display - show full date for daily data
   const chartData = cityData.history.map(d => ({
-    date: new Date(d.date).getFullYear(),
+    date: d.date, // Keep as YYYY-MM-DD
+    displayDate: new Date(d.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
     [Metric.SoilMoisture]: d.Soil_Moisture,
     [Metric.FloodInundation]: d.Flood_Inundation_Index,
     [Metric.VegetationDensity]: d.Vegetation_Density,
@@ -36,7 +38,7 @@ const CityModal: React.FC<CityModalProps> = ({ cityData, onClose }) => {
         onClick={e => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold text-white">{cityData.name} - 5-Year Trend</h2>
+          <h2 className="text-2xl font-bold text-white">{cityData.name} - Time Series Data</h2>
           <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -47,7 +49,14 @@ const CityModal: React.FC<CityModalProps> = ({ cityData, onClose }) => {
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={chartData} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#4a5568" />
-              <XAxis dataKey="date" stroke="#a0aec0" />
+              <XAxis 
+                dataKey="date" 
+                stroke="#a0aec0"
+                tick={{ fontSize: 10 }}
+                angle={-45}
+                textAnchor="end"
+                height={60}
+              />
               <YAxis stroke="#a0aec0" domain={[0, 1]}/>
               <Tooltip 
                 contentStyle={{ 
@@ -56,6 +65,7 @@ const CityModal: React.FC<CityModalProps> = ({ cityData, onClose }) => {
                   borderRadius: '0.5rem'
                 }} 
                 labelStyle={{ color: '#e2e8f0' }}
+                labelFormatter={(value) => `Date: ${value}`}
               />
               <Legend wrapperStyle={{ color: '#e2e8f0' }} />
               <Line 
